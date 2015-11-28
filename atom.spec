@@ -7,15 +7,16 @@ Version:	1.2.4
 Release:	0.1
 License:	MIT
 Group:		Applications/Editors
-Source0:	https://github.com/atom/atom/archive/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	c39979527badc8a17d0af47d36994990
+Source0:	https://github.com/atom/atom/releases/download/v%{version}/%{name}.x86_64.rpm
+# NoSource0-md5:	2c1b984e9e2ce95449987006386463ca
+# no point storing it in distfiles, this package is no ready
+NoSource:	0
 URL:		https://atom.io/
-BuildRequires:	libgnome-keyring-devel
-BuildRequires:	libstdc++-devel
-BuildRequires:	nodejs-devel
-BuildRequires:	nodejs-gyp
-BuildRequires:	npm >= 1.4
+BuildRequires:	rpm-utils
+ExclusiveArch:	%{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		_appdir		%{_libdir}/%{name}
 
 %description
 Atom is a desktop application based on web technologies. Like other
@@ -28,27 +29,48 @@ adding major features with HTML and JavaScript, it's never been easier
 to take control of your editor.
 
 %prep
-%setup -q
+%setup -qcT
+SOURCE=%{SOURCE0}
+version=$(rpm -qp --nodigest --nosignature --qf '%{V}' $SOURCE)
+test version:${version} = version:%{version}
+rpm2cpio $SOURCE | cpio -i -d
 
-%build
-# Set the build directory as per grunt.option('build-dir') in Gruntfile.coffee.
-# This prevents Atom from being built somewhere in /tmp.
-script/build \
-	--build-dir=$PWD/build-rpm
+mv usr/share/icons .
+mv usr/share/applications/* .
+mv usr/share/atom .
+mv usr/bin .
+
+mv atom/LICENSE .
+mv atom/chromedriver/LICENSE LICENSE.chromedrive
 
 %install
 rm -rf $RPM_BUILD_ROOT
-# The install task honours the INSTALL_PREFIX environment variable, so specify
-# it for easier packaging.
-export INSTALL_PREFIX=$RPM_BUILD_ROOT%{_prefix}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_appdir}}
 
-# -d switch enables debugging output, -v enables verbose output
-script/grunt -dv --build-dir=$PWD/build-rpm install
+cp -a atom/* $RPM_BUILD_ROOT%{_appdir}
+
+install -p bin/atom $RPM_BUILD_ROOT%{_bindir}
+ln -s %{_appdir}/resources/app/apm/node_modules/.bin/apm $RPM_BUILD_ROOT%{_bindir}/apm
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
+%doc LICENSE LICENSE.chromedrive
 %attr(755,root,root) %{_bindir}/atom
 %attr(755,root,root) %{_bindir}/apm
+%dir %{_appdir}
+%{_appdir}/version
+%{_appdir}/*.bin
+%{_appdir}/content_shell.pak
+%{_appdir}/icudtl.dat
+%attr(755,root,root) %{_appdir}/atom
+%attr(755,root,root) %{_appdir}/libgcrypt.so.11
+%attr(755,root,root) %{_appdir}/libnode.so
+%attr(755,root,root) %{_appdir}/libnotify.so.4
+%dir %{_appdir}/chromedriver
+%attr(755,root,root) %{_appdir}/chromedriver/chromedriver
+
+%{_appdir}/locales
+%{_appdir}/resources
