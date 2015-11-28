@@ -4,7 +4,7 @@
 Summary:	A hackable text editor for the 21st century
 Name:		atom
 Version:	1.2.4
-Release:	0.1
+Release:	0.2
 License:	MIT
 Group:		Applications/Editors
 Source0:	https://github.com/atom/atom/releases/download/v%{version}/%{name}.x86_64.rpm
@@ -49,8 +49,8 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_appdir}}
 
 cp -a atom/* $RPM_BUILD_ROOT%{_appdir}
 
-install -p bin/atom $RPM_BUILD_ROOT%{_bindir}
-ln -s %{_appdir}/resources/app/apm/node_modules/.bin/apm $RPM_BUILD_ROOT%{_bindir}/apm
+ln -s %{_appdir}/atom $RPM_BUILD_ROOT%{_bindir}
+ln -s %{_appdir}/resources/app/apm/bin/apm $RPM_BUILD_ROOT%{_bindir}/apm
 
 %clean
 rm -rf $RPM_BUILD_ROOT
