@@ -4,7 +4,7 @@
 Summary:	A hackable text editor for the 21st century
 Name:		atom
 Version:	1.2.4
-Release:	0.2
+Release:	0.3
 License:	MIT
 Group:		Applications/Editors
 Source0:	https://github.com/atom/atom/releases/download/v%{version}/%{name}.x86_64.rpm
@@ -43,6 +43,12 @@ mv usr/bin .
 mv atom/LICENSE .
 mv atom/chromedriver/LICENSE LICENSE.chromedrive
 
+# unneeded
+mv atom/resources/app/atom.sh .
+
+# remove empty locales
+find atom/locales -size 0 | xargs rm -v
+
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_appdir}}
@@ -73,4 +79,17 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_appdir}/chromedriver/chromedriver
 
 %{_appdir}/locales
-%{_appdir}/resources
+
+%dir %{_appdir}/resources
+     %{_appdir}/resources/LICENSE.md
+%dir %{_appdir}/resources/app
+
+%{_appdir}/resources/app.asar
+%{_appdir}/resources/atom.asar
+
+# too many files to list, assume file permissions
+%defattr(-,root,root,-)
+%{_appdir}/resources/app/apm
+
+# needed?
+%{_appdir}/resources/app.asar.unpacked
