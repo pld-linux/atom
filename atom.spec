@@ -14,6 +14,7 @@ BuildRequires:	libgnome-keyring-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	nodejs-devel
 BuildRequires:	nodejs-gyp
+BuildRequires:	npm >= 1.4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
