@@ -4,7 +4,7 @@
 Summary:	A hackable text editor for the 21st century
 Name:		atom
 Version:	1.2.4
-Release:	0.4
+Release:	0.5
 License:	MIT
 Group:		Applications/Editors
 Source0:	https://github.com/atom/atom/releases/download/v%{version}/%{name}.x86_64.rpm
@@ -18,6 +18,15 @@ ExclusiveArch:	%{x8664}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_appdir		%{_libdir}/%{name}
+
+# internal caps not to provide
+%define		int_caps	libgcrypt.so.11 libnode.so libnotify.so.4
+
+# list of files (regexps) which don't generate Provides
+%define		_noautoprovfiles	%{_libdir}/%{name}
+# list of script capabilities (regexps) not to be used in Provides
+%define		_noautoprov			%{int_caps}
+%define		_noautoreq  		%{_noautoprov}
 
 %description
 Atom is a desktop application based on web technologies. Like other
